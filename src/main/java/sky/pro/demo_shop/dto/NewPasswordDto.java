@@ -1,13 +1,9 @@
 package sky.pro.demo_shop.dto;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
-@Data
-@Getter
-@Setter
-public class NewPassword {
+
+
+public class NewPasswordDto {
     private String currentPassword;
     private String newPassword;
 

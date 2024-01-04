@@ -2,8 +2,9 @@ package sky.pro.demo_shop.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sky.pro.demo_shop.dto.NewPassword;
-import sky.pro.demo_shop.dto.Register;
+
+import sky.pro.demo_shop.dto.NewPasswordDto;
+import sky.pro.demo_shop.dto.RegisterDto;
 import sky.pro.demo_shop.dto.Role;
 
 
@@ -11,7 +12,7 @@ import sky.pro.demo_shop.dto.Role;
 @RequestMapping(path = "/users")
 public class UsersController {
     @PostMapping(path = "/set_password")
-    public ResponseEntity setPassword(@RequestBody NewPassword newPassword) {
+    public ResponseEntity setPassword(@RequestBody NewPasswordDto newPassword) {
         if (newPassword.getCurrentPassword() != null && newPassword.getNewPassword() != null && !newPassword.getNewPassword().isBlank()) {
             return ResponseEntity.ok().build();
         } else if (newPassword.getCurrentPassword() == null) {
@@ -23,7 +24,7 @@ public class UsersController {
 
     @GetMapping(path = "/me")
     public ResponseEntity me() {
-        Register user = new Register();
+        RegisterDto user = new RegisterDto();
         user.setFirstName("test ");
         user.setLastName("test ");
         user.setPhone("test ");

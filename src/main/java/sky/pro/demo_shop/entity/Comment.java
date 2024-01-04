@@ -1,8 +1,12 @@
 package sky.pro.demo_shop.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 
+import sky.pro.demo_shop.dto.CommentDto;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -14,14 +18,19 @@ public class Comment {
     @Id
     private Integer pk;
     private String text;
+    private int count;
+    @ManyToOne
+    private Ad ad;
 
-    public Comment(Integer author, String authorImage, String authorFirstName, Long createdAt, Integer pk, String text) {
+    public Comment(Integer author, String authorImage, String authorFirstName
+            , Long createdAt, Integer pk, String text, int count) {
         this.author = author;
         this.authorImage = authorImage;
         this.authorFirstName = authorFirstName;
         this.createdAt = createdAt;
         this.pk = pk;
         this.text = text;
+        this.count = count;
     }
 
     public Integer getAuthor() {
@@ -72,6 +81,14 @@ public class Comment {
         this.text = text;
     }
 
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
     @Override
     public String toString() {
         return "Comment{" +
@@ -81,6 +98,7 @@ public class Comment {
                 ", createdAt=" + createdAt +
                 ", pk=" + pk +
                 ", text='" + text + '\'' +
+                ", count=" + count +
                 '}';
     }
 
@@ -89,11 +107,11 @@ public class Comment {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Comment comment = (Comment) o;
-        return Objects.equals(author, comment.author) && Objects.equals(authorImage, comment.authorImage) && Objects.equals(authorFirstName, comment.authorFirstName) && Objects.equals(createdAt, comment.createdAt) && Objects.equals(pk, comment.pk) && Objects.equals(text, comment.text);
+        return count == comment.count && Objects.equals(author, comment.author) && Objects.equals(authorImage, comment.authorImage) && Objects.equals(authorFirstName, comment.authorFirstName) && Objects.equals(createdAt, comment.createdAt) && Objects.equals(pk, comment.pk) && Objects.equals(text, comment.text);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(author, authorImage, authorFirstName, createdAt, pk, text);
+        return Objects.hash(author, authorImage, authorFirstName, createdAt, pk, text, count);
     }
 }

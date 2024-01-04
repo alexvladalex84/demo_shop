@@ -1,29 +1,25 @@
 package sky.pro.demo_shop.dto;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+
 
 import java.util.Objects;
 
-@Data
-@Getter
-@Setter
+
 public class LoginDto {
-    private String userName;
+    private String username;
     private String password;
 
-    public LoginDto(String userName, String password) {
-        this.userName = userName;
+    public LoginDto(String username, String password) {
+        this.username = username;
         this.password = password;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUsername(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {
@@ -37,7 +33,7 @@ public class LoginDto {
     @Override
     public String toString() {
         return "Login{" +
-                "userName='" + userName + '\'' +
+                "username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 '}';
     }
@@ -47,11 +43,11 @@ public class LoginDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         LoginDto login = (LoginDto) o;
-        return Objects.equals(userName, login.userName) && Objects.equals(password, login.password);
+        return Objects.equals(username, login.username) && Objects.equals(password, login.password);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userName, password);
+        return Objects.hash(username, password);
     }
 }

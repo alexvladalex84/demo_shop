@@ -1,15 +1,9 @@
 package sky.pro.demo_shop.dto;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.Objects;
 
-@Data
-@Getter
-@Setter
-public class Register {
+
+public class RegisterDto {
     private String userName;
     private String password;
     private String firstName;
@@ -17,10 +11,10 @@ public class Register {
     private String phone;
     private Role role;
 
-    public Register() {
+    public RegisterDto() {
 
     }
-    public Register(String userName, String password, String firstName, String lastName, String phone, Role role) {
+    public RegisterDto(String userName, String password, String firstName, String lastName, String phone, Role role) {
         this.userName = userName;
         this.password = password;
         this.firstName = firstName;
@@ -93,7 +87,7 @@ public class Register {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Register register = (Register) o;
+        RegisterDto register = (RegisterDto) o;
         return Objects.equals(userName, register.userName) && Objects.equals(password, register.password) && Objects.equals(firstName, register.firstName) && Objects.equals(lastName, register.lastName) && Objects.equals(phone, register.phone) && role == register.role;
     }
 
