@@ -3,7 +3,9 @@ package sky.pro.demo_shop.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -20,9 +22,16 @@ import sky.pro.demo_shop.entity.Users;
 import javax.sql.DataSource;
 
 import static org.springframework.security.config.Customizer.withDefaults;
+@Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true)
+@EnableMethodSecurity
+//@EnableWebSecurity
+//@EnableGlobalMethodSecurity(securedEnabled = true)
 public class WebSecurityConfig {
+    private final MyUserDetailsService userDetailsService;
+    public WebSecurityConfig(MyUserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     private static final String[] AUTH_WHITELIST = {
             "/swagger-resources/**",
@@ -33,8 +42,6 @@ public class WebSecurityConfig {
             "/register"
     };
 
-
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf()
@@ -42,7 +49,11 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(
                         authorization ->
                                 authorization
+                                        .antMatchers(HttpMethod.OPTIONS)
+                                        .permitAll()
                                         .mvcMatchers(AUTH_WHITELIST)
+                                        .permitAll()
+                                        .antMatchers(HttpMethod.GET,"ads","/ads/image/**","/user/image/**")
                                         .permitAll()
                                         .mvcMatchers("/ads/**", "/users/**")
                                         .authenticated())

@@ -3,7 +3,6 @@ package sky.pro.demo_shop.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.springframework.stereotype.Component;
 import sky.pro.demo_shop.dto.LoginDto;
 import sky.pro.demo_shop.dto.RegisterDto;
 import sky.pro.demo_shop.dto.UpdateUserDto;
