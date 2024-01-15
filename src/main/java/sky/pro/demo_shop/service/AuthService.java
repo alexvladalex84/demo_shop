@@ -1,10 +1,14 @@
 package sky.pro.demo_shop.service;
 
 
+import sky.pro.demo_shop.dto.LoginDto;
 import sky.pro.demo_shop.dto.RegisterDto;
 
+import javax.transaction.Transactional;
+
 public interface AuthService {
-    boolean login(String userName, String password);
+@Transactional
+    boolean login(LoginDto loginDto);
 
     boolean register(RegisterDto register);
 }

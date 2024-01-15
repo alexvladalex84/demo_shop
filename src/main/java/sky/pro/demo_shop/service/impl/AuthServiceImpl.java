@@ -1,83 +1,78 @@
 package sky.pro.demo_shop.service.impl;
 
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
-
+import sky.pro.demo_shop.config.MyUserDetailsService;
+import sky.pro.demo_shop.config.WebSecurityConfig;
+import sky.pro.demo_shop.dto.LoginDto;
 import sky.pro.demo_shop.dto.RegisterDto;
-import sky.pro.demo_shop.dto.Role;
 import sky.pro.demo_shop.entity.Users;
+import sky.pro.demo_shop.mapper.UserMapperDto;
 import sky.pro.demo_shop.repository.UserRepository;
 import sky.pro.demo_shop.service.AuthService;
 
-import java.util.Optional;
+import javax.transaction.Transactional;
 
 
 @Service
 public class AuthServiceImpl implements AuthService {
+    private final MyUserDetailsService myUserDetailsService;
+    private final WebSecurityConfig webSecurityConfig;
+    private final PasswordEncoder passwordEncoder;
+    private final UserMapperDto userMapperDto;
     private final UserRepository userRepository;
-    private final UserDetailsManager manager;
-    private final PasswordEncoder encoder;
 
-    public AuthServiceImpl(UserDetailsManager manager,
-                           PasswordEncoder passwordEncoder,UserRepository userRepository) {
-        this.manager = manager;
-        this.encoder = passwordEncoder;
+    public AuthServiceImpl(MyUserDetailsService myUserDetailsService, WebSecurityConfig webSecurityConfig
+            , PasswordEncoder passwordEncoder, UserMapperDto userMapperDto, UserRepository userRepository) {
+        this.myUserDetailsService = myUserDetailsService;
+        this.webSecurityConfig = webSecurityConfig;
+        this.passwordEncoder = passwordEncoder;
+        this.userMapperDto = userMapperDto;
         this.userRepository = userRepository;
     }
 
     @Override
-    public boolean login(String userName, String password) {
-        if (!manager.userExists(userName)) {
+    @Transactional
+    public boolean login(LoginDto loginDto) {
+
+        Users newUser = userMapperDto.loginDtoToUsers(loginDto);
+        newUser.setPassword(webSecurityConfig.passwordEncoder().encode(newUser.getPassword()));
+        if (userRepository.findByEmail(newUser.getEmail()).isEmpty()) {
             return false;
         }
-        UserDetails userDetails = manager.loadUserByUsername(userName);
-        return encoder.matches(password, userDetails.getPassword());
+        UserDetails userDetails = myUserDetailsService.loadUserByUsername(newUser.getUsername());
+        if( webSecurityConfig.passwordEncoder().matches(newUser.getPassword(), userDetails.getPassword())){
+            return true;}
+        return false;
     }
-
-//    @Override
-//    public boolean register(RegisterDto register) {
-//        if (manager.userExists(register.getUserName())) {
-//            return false;
+/// @Override
+//    @Transactional
+//    public Users login(LoginDto loginDTO) {
+//        Users loginUser = userMapper.loginDtoToUsers(loginDTO);
+//        loginUser.setPassword(encoderConfiguration.passwordEncoder().encode(loginUser.getPassword()));
+//        Users user;
+//        try {
+//            user = userRepository.findByEmail(loginUser.getEmail()).get();
+//        } catch (Exception e) {
+//            return null;
 //        }
-//        manager.createUser(
-//                User.builder()
-//                        .passwordEncoder(this.encoder::encode)
-//                        .password(register.getPassword())
-//                        .username(register.getUserName())
-//                        .roles(register.getRole().name())
-//                        .build());
-//
-//
-//        return true;
-//    }
-//@Override
-//    public boolean login(String userName, String password) {
-//    Optional<Users> userByUserPassword = userRepository.findUserByPassword(password);
-//
-//        if (userByUserPassword.isEmpty()) {
-//            return false;
+//        if (encoderConfiguration.passwordEncoder().matches(loginDTO.getPassword(), user.getPassword())) {
+//            loadUserByUsername(user.getEmail());
+//            return user;
 //        }
-//
-//    }
-
+//        return null;
     @Override
     public boolean register(RegisterDto registerDto) {
-        Optional<Users> userByUserName = userRepository.findUserByUsername(registerDto.getUserName());
-        if (userByUserName.isPresent()) {
-            return false;
+        Users newUser = userMapperDto.registerDtoToUser(registerDto);
+        newUser.setPassword(webSecurityConfig.passwordEncoder().encode(newUser.getPassword()));
+        if (userRepository.findByEmail(newUser.getEmail()).isEmpty()) {
+            userRepository.save(newUser);
+            return true;
         }
-        Users userSave = new Users();
-        userSave.setUsername(registerDto.getUserName());
-        userSave.setPassword(registerDto.getPassword());
-        userSave.setFirstName(registerDto.getFirstName());
-        userSave.setLastName(registerDto.getLastName());
-        userSave.setPhone(registerDto.getPhone());
-//        userSave.setRole(registerDto.getRole());
-        userRepository.save(userSave);
-        return true;
+
+        return false;
     }
+
 
 }
