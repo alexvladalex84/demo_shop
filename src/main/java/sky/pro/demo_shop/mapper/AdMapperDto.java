@@ -8,6 +8,7 @@ import sky.pro.demo_shop.entity.Ad;
 
 @Mapper
 public interface AdMapperDto {
+
     AdDto adToAdDto(Ad ad);
     Ad adDtoToAd(AdDto ad);
 

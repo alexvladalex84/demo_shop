@@ -3,10 +3,12 @@ package sky.pro.demo_shop.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import sky.pro.demo_shop.dto.LoginDto;
 import sky.pro.demo_shop.dto.RegisterDto;
 import sky.pro.demo_shop.dto.UpdateUserDto;
 import sky.pro.demo_shop.dto.UserDto;
+import sky.pro.demo_shop.entity.Avatar;
 import sky.pro.demo_shop.entity.Users;
 
 

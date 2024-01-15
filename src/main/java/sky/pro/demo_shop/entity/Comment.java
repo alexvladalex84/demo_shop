@@ -1,76 +1,52 @@
 package sky.pro.demo_shop.entity;
 
 
-import sky.pro.demo_shop.dto.CommentDto;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import java.util.List;
+import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
 public class Comment {
-    private Integer author;
-    private String authorImage;    //ссылка на аватар автора комментария
-    private String authorFirstName; //имя создателя комментария
-    private Long createdAt;       //дата и время создания комментария в миллисекундах с 00:00:00 01.01.1970
     @Id
-    private Integer pk;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private LocalDateTime createdAt;
+
     private String text;
-    private int count;
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
+
+    @JoinColumn(name = "author_id")
+    private Users author;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pk_ad")
     private Ad ad;
 
-    public Comment(Integer author, String authorImage, String authorFirstName
-            , Long createdAt, Integer pk, String text, int count) {
-        this.author = author;
-        this.authorImage = authorImage;
-        this.authorFirstName = authorFirstName;
+    public Comment(Long id, LocalDateTime createdAt, String text, Users author, Ad ad) {
+        this.id = id;
         this.createdAt = createdAt;
-        this.pk = pk;
         this.text = text;
-        this.count = count;
-    }
-
-    public Integer getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(Integer author) {
         this.author = author;
+        this.ad = ad;
     }
 
-    public String getAuthorImage() {
-        return authorImage;
+    public Long getId() {
+        return id;
     }
 
-    public void setAuthorImage(String authorImage) {
-        this.authorImage = authorImage;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public String getAuthorFirstName() {
-        return authorFirstName;
-    }
-
-    public void setAuthorFirstName(String authorFirstName) {
-        this.authorFirstName = authorFirstName;
-    }
-
-    public Long getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Long createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public Integer getPk() {
-        return pk;
-    }
-
-    public void setPk(Integer pk) {
-        this.pk = pk;
     }
 
     public String getText() {
@@ -81,24 +57,30 @@ public class Comment {
         this.text = text;
     }
 
-    public int getCount() {
-        return count;
+    public Users getAuthor() {
+        return author;
     }
 
-    public void setCount(int count) {
-        this.count = count;
+    public void setAuthor(Users author) {
+        this.author = author;
+    }
+
+    public Ad getAd() {
+        return ad;
+    }
+
+    public void setAd(Ad ad) {
+        this.ad = ad;
     }
 
     @Override
     public String toString() {
         return "Comment{" +
-                "author=" + author +
-                ", authorImage='" + authorImage + '\'' +
-                ", authorFirstName='" + authorFirstName + '\'' +
+                "id=" + id +
                 ", createdAt=" + createdAt +
-                ", pk=" + pk +
                 ", text='" + text + '\'' +
-                ", count=" + count +
+                ", author=" + author +
+                ", ad=" + ad +
                 '}';
     }
 
@@ -107,11 +89,11 @@ public class Comment {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Comment comment = (Comment) o;
-        return count == comment.count && Objects.equals(author, comment.author) && Objects.equals(authorImage, comment.authorImage) && Objects.equals(authorFirstName, comment.authorFirstName) && Objects.equals(createdAt, comment.createdAt) && Objects.equals(pk, comment.pk) && Objects.equals(text, comment.text);
+        return Objects.equals(id, comment.id) && Objects.equals(createdAt, comment.createdAt) && Objects.equals(text, comment.text) && Objects.equals(author, comment.author) && Objects.equals(ad, comment.ad);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(author, authorImage, authorFirstName, createdAt, pk, text, count);
+        return Objects.hash(id, createdAt, text, author, ad);
     }
 }
