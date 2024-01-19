@@ -1,36 +1,69 @@
 package sky.pro.demo_shop.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.Objects;
 
 @Entity
+@Transactional
 public class Image {
     @Id()
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
+    private String name;
+    private String originalFileName;
     private String filePath;
-    private long fileSize;
+    private Long fileSize;
     private String mediaType;
-    private byte[] data;
+    private boolean isPreviewImage;
+    @OneToOne
+    private Users users;
+    @Lob
+    private byte[] bytes;
+    @ManyToOne
+    private Ad ad;
 
-    public Image(long id, String filePath, long fileSize, String mediaType, byte[] data) {
+    public Image() {
+
+    }
+
+    public Image(Long id, String name, String originalFileName, String filePath, Long fileSize
+            , String mediaType, boolean isPreviewImage, Users users, byte[] bytes, Ad ad) {
         this.id = id;
+        this.name = name;
+        this.originalFileName = originalFileName;
         this.filePath = filePath;
         this.fileSize = fileSize;
         this.mediaType = mediaType;
-        this.data = data;
+        this.isPreviewImage = isPreviewImage;
+        this.users = users;
+        this.bytes = bytes;
+        this.ad = ad;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getOriginalFileName() {
+        return originalFileName;
+    }
+
+    public void setOriginalFileName(String originalFileName) {
+        this.originalFileName = originalFileName;
     }
 
     public String getFilePath() {
@@ -41,11 +74,11 @@ public class Image {
         this.filePath = filePath;
     }
 
-    public long getFileSize() {
+    public Long getFileSize() {
         return fileSize;
     }
 
-    public void setFileSize(long fileSize) {
+    public void setFileSize(Long fileSize) {
         this.fileSize = fileSize;
     }
 
@@ -57,22 +90,51 @@ public class Image {
         this.mediaType = mediaType;
     }
 
-    public byte[] getData() {
-        return data;
+    public boolean isPreviewImage() {
+        return isPreviewImage;
     }
 
-    public void setData(byte[] data) {
-        this.data = data;
+    public void setPreviewImage(boolean previewImage) {
+        isPreviewImage = previewImage;
+    }
+
+    public Users getUsers() {
+        return users;
+    }
+
+    public void setUsers(Users users) {
+        this.users = users;
+    }
+
+    public byte[] getBytes() {
+        return bytes;
+    }
+
+    public void setBytes(byte[] bytes) {
+        this.bytes = bytes;
+    }
+
+    public Ad getAd() {
+        return ad;
+    }
+
+    public void setAd(Ad ad) {
+        this.ad = ad;
     }
 
     @Override
     public String toString() {
         return "Image{" +
                 "id=" + id +
+                ", name='" + name + '\'' +
+                ", originalFileName='" + originalFileName + '\'' +
                 ", filePath='" + filePath + '\'' +
                 ", fileSize=" + fileSize +
                 ", mediaType='" + mediaType + '\'' +
-                ", data=" + Arrays.toString(data) +
+                ", isPreviewImage=" + isPreviewImage +
+                ", users=" + users +
+                ", bytes=" + Arrays.toString(bytes) +
+                ", ad=" + ad +
                 '}';
     }
 
@@ -81,13 +143,13 @@ public class Image {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Image image = (Image) o;
-        return id == image.id && fileSize == image.fileSize && Objects.equals(filePath, image.filePath) && Objects.equals(mediaType, image.mediaType) && Arrays.equals(data, image.data);
+        return isPreviewImage == image.isPreviewImage && Objects.equals(id, image.id) && Objects.equals(name, image.name) && Objects.equals(originalFileName, image.originalFileName) && Objects.equals(filePath, image.filePath) && Objects.equals(fileSize, image.fileSize) && Objects.equals(mediaType, image.mediaType) && Objects.equals(users, image.users) && Arrays.equals(bytes, image.bytes) && Objects.equals(ad, image.ad);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, filePath, fileSize, mediaType);
-        result = 31 * result + Arrays.hashCode(data);
+        int result = Objects.hash(id, name, originalFileName, filePath, fileSize, mediaType, isPreviewImage, users, ad);
+        result = 31 * result + Arrays.hashCode(bytes);
         return result;
     }
 }

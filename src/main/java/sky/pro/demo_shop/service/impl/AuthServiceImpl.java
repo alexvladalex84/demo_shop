@@ -12,16 +12,20 @@ import sky.pro.demo_shop.mapper.UserMapperDto;
 import sky.pro.demo_shop.repository.UserRepository;
 import sky.pro.demo_shop.service.AuthService;
 
-import javax.transaction.Transactional;
+
+import java.util.logging.Logger;
 
 
 @Service
 public class AuthServiceImpl implements AuthService {
+
     private final MyUserDetailsService myUserDetailsService;
     private final WebSecurityConfig webSecurityConfig;
     private final PasswordEncoder passwordEncoder;
     private final UserMapperDto userMapperDto;
     private final UserRepository userRepository;
+
+    private static final Logger log = Logger.getLogger(String.valueOf(AuthServiceImpl.class));
 
     public AuthServiceImpl(MyUserDetailsService myUserDetailsService, WebSecurityConfig webSecurityConfig
             , PasswordEncoder passwordEncoder, UserMapperDto userMapperDto, UserRepository userRepository) {
@@ -33,40 +37,30 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    @Transactional
     public boolean login(LoginDto loginDto) {
+        String p = loginDto.getPassword();
 
-        Users newUser = userMapperDto.loginDtoToUsers(loginDto);
-        newUser.setPassword(webSecurityConfig.passwordEncoder().encode(newUser.getPassword()));
-        if (userRepository.findByEmail(newUser.getEmail()).isEmpty()) {
+        if (userRepository.findByEmailIgnoreCase(loginDto.getUsername()).isEmpty()) {
+            log.info(" login отрабатывает false");
             return false;
         }
-        UserDetails userDetails = myUserDetailsService.loadUserByUsername(newUser.getUsername());
-        if( webSecurityConfig.passwordEncoder().matches(newUser.getPassword(), userDetails.getPassword())){
-            return true;}
-        return false;
+        UserDetails userDetails = myUserDetailsService.loadUserByUsername(loginDto.getUsername());
+        String p2 = userDetails.getPassword();
+        log.info(" login отрабатывает второй блок");
+
+        return passwordEncoder.matches(p, p2);
+
     }
-/// @Override
-//    @Transactional
-//    public Users login(LoginDto loginDTO) {
-//        Users loginUser = userMapper.loginDtoToUsers(loginDTO);
-//        loginUser.setPassword(encoderConfiguration.passwordEncoder().encode(loginUser.getPassword()));
-//        Users user;
-//        try {
-//            user = userRepository.findByEmail(loginUser.getEmail()).get();
-//        } catch (Exception e) {
-//            return null;
-//        }
-//        if (encoderConfiguration.passwordEncoder().matches(loginDTO.getPassword(), user.getPassword())) {
-//            loadUserByUsername(user.getEmail());
-//            return user;
-//        }
-//        return null;
+
+
     @Override
     public boolean register(RegisterDto registerDto) {
         Users newUser = userMapperDto.registerDtoToUser(registerDto);
+
+
         newUser.setPassword(webSecurityConfig.passwordEncoder().encode(newUser.getPassword()));
-        if (userRepository.findByEmail(newUser.getEmail()).isEmpty()) {
+
+        if (userRepository.findByEmailIgnoreCase(newUser.getEmail()).isEmpty()) {
             userRepository.save(newUser);
             return true;
         }

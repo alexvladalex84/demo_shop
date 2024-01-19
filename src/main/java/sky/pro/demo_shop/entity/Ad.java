@@ -4,7 +4,12 @@ package sky.pro.demo_shop.entity;
 
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+
+import static javax.persistence.GenerationType.IDENTITY;
 
 /**
  * объявление
@@ -12,47 +17,56 @@ import java.util.Objects;
 @Entity
 public class Ad {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
+    @GeneratedValue(strategy = IDENTITY)
+    private Integer pk;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Users author;
+    private String image;
+    private int price;
+    private String title;
     private String description;
 
-    private int price;
+    //    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    public Ad() {
 
-    private String title;
+    }
 
-
-
-    @OneToOne
-    private Image image;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "author_id")
-    private Users author;
-
-    public Ad(long id, String description, int price, String title, Image image, Users author) {
-        this.id = id;
-        this.description = description;
+    public Ad(Integer pk, Users author, String image, int price, String title, String description) {
+        this.pk = pk;
+        this.author = author;
+        this.image = image;
         this.price = price;
         this.title = title;
-        this.image = image;
+        this.description = description;
+    }
+
+    public Integer getPk() {
+        return pk;
+    }
+
+    public void setPk(Integer pk) {
+        this.pk = pk;
+    }
+
+    public Users getAuthor() {
+        return author;
+    }
+
+
+    public void setAuthor(Users author) {
         this.author = author;
     }
 
-    public long getId() {
-        return id;
+//    public void setAuthorId(Integer authorId) {
+//        this.author.getId() = authorId;
+//    }
+
+    public String getImage() {
+        return image;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public int getPrice() {
@@ -71,31 +85,23 @@ public class Ad {
         this.title = title;
     }
 
-    public Image getImage() {
-        return image;
+    public String getDescription() {
+        return description;
     }
 
-    public void setImage(Image image) {
-        this.image = image;
-    }
-
-    public Users getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(Users author) {
-        this.author = author;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
     public String toString() {
         return "Ad{" +
-                "id=" + id +
-                ", description='" + description + '\'' +
+                "pk=" + pk +
+                ", author=" + author +
+                ", image='" + image + '\'' +
                 ", price=" + price +
                 ", title='" + title + '\'' +
-                ", image=" + image +
-                ", author=" + author +
+                ", description='" + description + '\'' +
                 '}';
     }
 
@@ -104,11 +110,11 @@ public class Ad {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Ad ad = (Ad) o;
-        return id == ad.id && price == ad.price && Objects.equals(description, ad.description) && Objects.equals(title, ad.title) && Objects.equals(image, ad.image) && Objects.equals(author, ad.author);
+        return price == ad.price && Objects.equals(pk, ad.pk) && Objects.equals(author, ad.author) && Objects.equals(image, ad.image) && Objects.equals(title, ad.title) && Objects.equals(description, ad.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, description, price, title, image, author);
+        return Objects.hash(pk, author, image, price, title, description);
     }
 }
