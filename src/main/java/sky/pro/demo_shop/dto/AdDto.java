@@ -1,10 +1,12 @@
 package sky.pro.demo_shop.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 
 public class AdDto {
-    private int author;  //id автора объявления
-    private String image;  //ссылка на картинку объявления
-    private int pk;        //id объявления
+    private int author;
+    private String image;
+    private int pk;
     private int price;
     private String title;
 

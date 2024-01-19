@@ -7,7 +7,7 @@ import sky.pro.demo_shop.config.MyUserDetailsService;
 import sky.pro.demo_shop.config.WebSecurityConfig;
 import sky.pro.demo_shop.dto.LoginDto;
 import sky.pro.demo_shop.dto.RegisterDto;
-import sky.pro.demo_shop.entity.Users;
+import sky.pro.demo_shop.entity.User;
 import sky.pro.demo_shop.mapper.UserMapperDto;
 import sky.pro.demo_shop.repository.UserRepository;
 import sky.pro.demo_shop.service.AuthService;
@@ -55,7 +55,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public boolean register(RegisterDto registerDto) {
-        Users newUser = userMapperDto.registerDtoToUser(registerDto);
+        User newUser = userMapperDto.registerDtoToUser(registerDto);
 
 
         newUser.setPassword(webSecurityConfig.passwordEncoder().encode(newUser.getPassword()));

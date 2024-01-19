@@ -2,11 +2,11 @@ package sky.pro.demo_shop.dto;
 
 
 import java.util.List;
-import java.util.Objects;
+
 
 public class AdsDto {
     private int count;
-    private List<AdDto> result;
+    private List<AdDto> results;
 
     public int getCount() {
         return count;
@@ -16,11 +16,11 @@ public class AdsDto {
         this.count = count;
     }
 
-    public List<AdDto> getResult() {
-        return result;
+    public List<AdDto> getResults() {
+        return results;
     }
 
-    public void setResult(List<AdDto> result) {
-        this.result = result;
+    public void setResults(List<AdDto> results) {
+        this.results = results;
     }
 }

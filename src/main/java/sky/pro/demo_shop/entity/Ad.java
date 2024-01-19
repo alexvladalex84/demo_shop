@@ -1,37 +1,48 @@
 package sky.pro.demo_shop.entity;
 
-
-
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
 /**
- * объявление
+ * DAO <br>
+ * <hr>
+ * <br>
+ * Ad { <br><br>
+ * Integer pk <br>
+ * id автора объявления <br><br>
+ * {@link User} author <br>
+ * автор объявления <br><br>
+ * String image <br>
+ * ссылка на картинку объявления <br><br>
+ * int price <br>
+ * цена объявления <br><br>
+ * String title <br>
+ * заголовок объявления <br><br>
+ * String description <br>
+ * описание объявления <br>
+ * }
  */
 @Entity
+@Table(name = "ad")
 public class Ad {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Integer pk;
     @ManyToOne(fetch = FetchType.EAGER)
-    private Users author;
+    private User author;
     private String image;
     private int price;
     private String title;
     private String description;
 
-    //    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     public Ad() {
-
     }
 
-    public Ad(Integer pk, Users author, String image, int price, String title, String description) {
+    public Ad(Integer pk, User author, String image, int price, String title, String description) {
         this.pk = pk;
         this.author = author;
         this.image = image;
@@ -48,18 +59,14 @@ public class Ad {
         this.pk = pk;
     }
 
-    public Users getAuthor() {
+    @JsonBackReference
+    public User getAuthor() {
         return author;
     }
 
-
-    public void setAuthor(Users author) {
+    public void setAuthor(User author) {
         this.author = author;
     }
-
-//    public void setAuthorId(Integer authorId) {
-//        this.author.getId() = authorId;
-//    }
 
     public String getImage() {
         return image;
@@ -94,18 +101,6 @@ public class Ad {
     }
 
     @Override
-    public String toString() {
-        return "Ad{" +
-                "pk=" + pk +
-                ", author=" + author +
-                ", image='" + image + '\'' +
-                ", price=" + price +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -116,5 +111,17 @@ public class Ad {
     @Override
     public int hashCode() {
         return Objects.hash(pk, author, image, price, title, description);
+    }
+
+    @Override
+    public String toString() {
+        return "Ad{" +
+                "pk=" + pk +
+                ", author=" + author +
+                ", image='" + image + '\'' +
+                ", price=" + price +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                '}';
     }
 }

@@ -29,7 +29,7 @@ public class AdsController {
     @GetMapping
     public ResponseEntity<AdsDto> getAll() {
         adsService.getAll();
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new AdsDto());
     }
 
     /**

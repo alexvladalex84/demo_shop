@@ -40,7 +40,7 @@ public class AdsServiceImpl {
             return null;
         }
         if (!adsList.isEmpty()) {
-            return adMapperDto.adListToAdsDto(adsList);
+            return adMapperDto.adsListToAdsDto(adsList);
         } else {
             return null;
         }
