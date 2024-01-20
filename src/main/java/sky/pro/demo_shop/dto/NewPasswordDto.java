@@ -2,7 +2,6 @@ package sky.pro.demo_shop.dto;
 
 
 
-
 public class NewPasswordDto {
     private String currentPassword;
     private String newPassword;

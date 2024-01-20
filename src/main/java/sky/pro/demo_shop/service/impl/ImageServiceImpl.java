@@ -1,25 +1,28 @@
 package sky.pro.demo_shop.service.impl;
 
+import org.apache.tika.Tika;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import sky.pro.demo_shop.entity.Image;
-import sky.pro.demo_shop.entity.Users;
+import sky.pro.demo_shop.entity.User;
 import sky.pro.demo_shop.exeption.UserNotFoundException;
-import sky.pro.demo_shop.repository.ImageRepository;
 import sky.pro.demo_shop.repository.UserRepository;
 
 import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
@@ -34,20 +37,15 @@ public class ImageServiceImpl {
 
     private final  String pathToImageAds;
     private final UserRepository userRepository;
-    private final ImageRepository imageRepository;
+//    private final ImageRepository imageRepository;
     private static final Logger log = Logger.getLogger(String.valueOf(AuthServiceImpl.class));
 
-    public ImageServiceImpl(@Value("${user.path.to.image.folder}")String pathToAvatars
-            ,  @Value("${ads.path.to.image.folder}")String pathToImageAds, UserRepository userRepository, ImageRepository imageRepository) {
+    public ImageServiceImpl(@Value("${avatar.path.to.image.folder}")String pathToAvatars,
+         @Value("${ads.path.to.image.folder}") String pathToImageAds, UserRepository userRepository) {
         this.pathToAvatars = pathToAvatars;
         this.pathToImageAds = pathToImageAds;
         this.userRepository = userRepository;
-        this.imageRepository = imageRepository;
     }
-
-
-
-
 
     /**
      * метод для загрузки фото
@@ -55,19 +53,19 @@ public class ImageServiceImpl {
      * @throws IOException
      */
     public void updateUserAvatar(MultipartFile file) throws IOException {
-    Optional<Users> user = userRepository.findByEmailIgnoreCase(getAuthorizedUser());
+    Optional<User> user = userRepository.findByEmail(getAuthorizedUser());
 
     if (user.isEmpty()) {
         log.info(" updateUserAvatar не найден");
         throw new UserNotFoundException();
     }
-    String fileName = "UserAv_" + user.get().getEmail() + "." + getExtensions(file.getOriginalFilename());
+    String fileName = "UserAv_" + user.get().getId() + "." + getExtensions(file.getOriginalFilename());
 
-    String fileName2 = "UserAv_" + user.get().getEmail() ;
+//    String fileName2 = "UserAv_" + user.get().getEmail() ;
 
     Path filePath = Path.of(pathToAvatars, fileName);
 
-        Path filePath2 = Path.of(pathToAvatars,fileName2);
+//        Path filePath2 = Path.of(pathToAvatars,fileName2);
 
     Files.createDirectories(filePath.getParent());         //зоздаёт папку
     Files.deleteIfExists(filePath);                            //удаляет файл если тот существует по определенному адресу
@@ -83,17 +81,17 @@ public class ImageServiceImpl {
     }
 
 
-    Users userAv = user.get();
+    User userAv = user.get();
     userAv.setNameImage(fileName);
 
-    Image image = findImageByUserName(getAuthorizedUser()); //ищем рользователя по Id
-    image.setUsers(userAv);                                   //Пользователь к которому загружаем аватар
-    image.setFilePath(filePath.toString());                  //путь к фалу на диске
-    image.setFileSize(file.getSize());                      //размер файла
-    image.setMediaType(file.getContentType());             //тип контент
-    image.setBytes(generateImagePreview(filePath));       //для хранения в базе данных ,уменьшаем файл
+//    Image image = findImageByUserName(getAuthorizedUser()); //ищем рользователя по Id
+//    image.setUsers(userAv);                                   //Пользователь к которому загружаем аватар
+//    image.setFilePath(filePath.toString());                  //путь к фалу на диске
+//    image.setFileSize(file.getSize());                      //размер файла
+//    image.setMediaType(file.getContentType());             //тип контент
+//    image.setBytes(generateImagePreview(filePath));       //для хранения в базе данных ,уменьшаем файл
     userRepository.save(userAv);
-    imageRepository.save(image);
+//    imageRepository.save(image);
 }
 
     /**
@@ -128,7 +126,7 @@ public class ImageServiceImpl {
      * @throws IOException
      */
     public byte[] getImage() throws IOException {
-        Optional<Users> user = userRepository.findByEmailIgnoreCase(getAuthorizedUser());
+        Optional<User> user = userRepository.findByEmail(getAuthorizedUser());
         if (user.isEmpty()) {
             log.info(" updateUserAvatar не найден");
             throw new UserNotFoundException();
@@ -155,13 +153,39 @@ public class ImageServiceImpl {
         return imageInBytes;
     }
 
+    public ResponseEntity<byte[]> getImage2(String imageName, HttpServletResponse response) throws IOException {
+        Path imagePath = Path.of(pathToAvatars,imageName);
+        if (!Files.isExecutable(imagePath)) {
+            imagePath = Path.of(pathToImageAds,imageName);
+        }
+        if (!Files.isExecutable(imagePath)) {
+            throw new IOException("File doesn't exist");
+        }
+        Tika tika = new Tika();
+        String mimeType = tika.detect(imagePath);
+        MediaType mediaType = MediaType.parseMediaType(mimeType);
+        byte[] imageInBytes = new byte[(int) Files.size(imagePath)];
+        try (
+                InputStream is = Files.newInputStream(imagePath)
+        ) {
+            IOUtils.readFully(is, imageInBytes);
+        } catch (IOException e) {
+            log.info(e.getMessage());
+        }
 
-    public Image findImageByUserName(String userName) {
-       Users user = userRepository.findByEmailIgnoreCase(userName).get();
-       Integer userId = user.getId();
-       return imageRepository.findByUsersId(userId).orElse(new Image());
-
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(mediaType);
+        headers.setContentLength(imageInBytes.length);
+        headers.setContentDispositionFormData(imageName, imageName);
+        return ResponseEntity.ok().headers(headers).body(imageInBytes);
     }
+
+//    public Image findImageByUserName(String userName) {
+//       User user = userRepository.findBiEmail(userName).get();
+//       Integer userId = user.getId();
+//       return imageRepository.findByUsersId(userId).orElse(new Image());
+//
+//    }
 
     /**
      * вспомогательный метод для расширения извлечения файла

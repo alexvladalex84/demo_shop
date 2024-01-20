@@ -1,52 +1,50 @@
 package sky.pro.demo_shop.entity;
 
+
 import sky.pro.demo_shop.dto.Role;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Objects;
+
+import static javax.persistence.GenerationType.IDENTITY;
+
 
 @Entity
 @Table(name = "users")
-public class Users {
+public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    //    @Column(name = "username")
+    @GeneratedValue(strategy = IDENTITY)
+    private Integer id;
     private String email;
-    private String username;
-    private String login;
     private String firstName;
     private String lastName;
-
+    private String phone;
+    private Role role;
+    private String nameImage;
     private String password;
 
-    private String phone;
-
-    private Role role;
-    @OneToOne
-    private Avatar avatar;
-
-    public Users() {
+    public User() {
     }
 
-    public Users(long id, String email, String firstName, String lastName
-            , String password, String phone, Role role, Avatar avatar) {
+    public User(Integer id, String email, String firstName, String lastName, String phone, Role role, String nameImage, String password) {
         this.id = id;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.password = password;
         this.phone = phone;
         this.role = role;
-        this.avatar = avatar;
+        this.nameImage = nameImage;
+        this.password = password;
     }
 
-    public long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -74,14 +72,6 @@ public class Users {
         this.lastName = lastName;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getPhone() {
         return phone;
     }
@@ -98,25 +88,33 @@ public class Users {
         this.role = role;
     }
 
-    public Avatar getAvatar() {
-        return avatar;
+    public String getNameImage() {
+        return nameImage;
     }
 
-    public void setAvatar(Avatar avatar) {
-        this.avatar = avatar;
+    public void setNameImage(String nameImage) {
+        this.nameImage = nameImage;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override
     public String toString() {
-        return "Users{" +
+        return "User{" +
                 "id=" + id +
                 ", email='" + email + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", password='" + password + '\'' +
                 ", phone='" + phone + '\'' +
                 ", role=" + role +
-                ", avatar=" + avatar +
+                ", nameImage='" + nameImage + '\'' +
+                ", password='" + password + '\'' +
                 '}';
     }
 
@@ -124,12 +122,12 @@ public class Users {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Users users = (Users) o;
-        return id == users.id && Objects.equals(email, users.email) && Objects.equals(firstName, users.firstName) && Objects.equals(lastName, users.lastName) && Objects.equals(password, users.password) && Objects.equals(phone, users.phone) && role == users.role && Objects.equals(avatar, users.avatar);
+        User user = (User) o;
+        return Objects.equals(id, user.id) && Objects.equals(email, user.email) && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(phone, user.phone) && role == user.role && Objects.equals(nameImage, user.nameImage) && Objects.equals(password, user.password);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, firstName, lastName, password, phone, role, avatar);
+        return Objects.hash(id, email, firstName, lastName, phone, role, nameImage, password);
     }
 }

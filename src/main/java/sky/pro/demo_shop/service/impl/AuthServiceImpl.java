@@ -36,11 +36,16 @@ public class AuthServiceImpl implements AuthService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * метод для аутентификации пользователей по логину и паролю
+     * @param loginDto
+     * @return
+     */
     @Override
     public boolean login(LoginDto loginDto) {
         String p = loginDto.getPassword();
 
-        if (userRepository.findByEmailIgnoreCase(loginDto.getUsername()).isEmpty()) {
+        if (userRepository.findByEmail(loginDto.getUsername()).isEmpty()) {
             log.info(" login отрабатывает false");
             return false;
         }
@@ -52,7 +57,11 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
-
+    /**
+     * метод для регистрации пользователя
+     * @param registerDto
+     * @return
+     */
     @Override
     public boolean register(RegisterDto registerDto) {
         User newUser = userMapperDto.registerDtoToUser(registerDto);
@@ -60,7 +69,7 @@ public class AuthServiceImpl implements AuthService {
 
         newUser.setPassword(webSecurityConfig.passwordEncoder().encode(newUser.getPassword()));
 
-        if (userRepository.findByEmailIgnoreCase(newUser.getEmail()).isEmpty()) {
+        if (userRepository.findByEmail(newUser.getEmail()).isEmpty()) {
             userRepository.save(newUser);
             return true;
         }

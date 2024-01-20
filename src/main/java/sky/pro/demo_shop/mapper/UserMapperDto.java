@@ -1,38 +1,47 @@
 package sky.pro.demo_shop.mapper;
 
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
-import sky.pro.demo_shop.dto.LoginDto;
-import sky.pro.demo_shop.dto.RegisterDto;
-import sky.pro.demo_shop.dto.UpdateUserDto;
-import sky.pro.demo_shop.dto.UserDto;
-import sky.pro.demo_shop.entity.Avatar;
-import sky.pro.demo_shop.entity.Users;
+import sky.pro.demo_shop.dto.*;
+import sky.pro.demo_shop.entity.User;
 
 
 @Mapper(componentModel = "spring")
 public interface UserMapperDto {
-    UserDto userToUserDto(Users user);
+    default UserDto userToUserDto(User user) {
+        if (user == null) {
+            return null;
+        }
+        UserDto userDTO = new UserDto();
+        if (user.getId() != null) {
+            userDTO.setId(user.getId());
+        }
+        userDTO.setEmail(user.getEmail());
+        userDTO.setFirstName(user.getFirstName());
+        userDTO.setLastName(user.getLastName());
+        userDTO.setPhone(user.getPhone());
+        userDTO.setRole(user.getRole());
+        userDTO.setImage("/" + user.getNameImage());
+        return userDTO;
+    }
 
-    Users UserDtoToUsers(UserDto userDto);
+    User userDtoToUser(UserDto user);
 
-    UpdateUserDto userToUpdateUserDto (Users user);
+    User updateUserDtoToUser(UpdateUserDto updateUser);
 
-    Users updateUserDtoToUser (UpdateUserDto updateUserDto);
+    UpdateUserDto userToUpdateUserDto(User user);
 
+    @Mapping(target = "email", source = "register.username")
+    User registerDtoToUser(RegisterDto register);
 
+    @Mapping(target = "firstName", source = "extendedAd.authorFirstName")
+    @Mapping(target = "lastName", source = "extendedAd.authorLastName")
+    @Mapping(target = "nameImage", ignore = true)
+    User extendedAdToUser(ExtendedAdDto extendedAd);
 
-    @Mapping(source = "email",target = "userName")
-    RegisterDto userToRegisterDto(Users users);
+    @Mapping(target = "username", source = "user.email")
+    LoginDto userToLoginDto(User user);
 
-    @Mapping(source = "userName",target = "email")
-    Users registerDtoToUser(RegisterDto registerDto);
-
-    @Mapping(source = "email", target = "username")
-    LoginDto usersToLoginDto(Users users);
-
-    @Mapping(source = "username",target = "email")
-    Users loginDtoToUsers(LoginDto loginDto);
+    @Mapping(target = "email", source = "loginDTO.username")
+    User loginDtoToUser(LoginDto loginDTO);
 }
