@@ -13,7 +13,7 @@ import sky.pro.demo_shop.repository.UserRepository;
 import sky.pro.demo_shop.service.AuthService;
 
 
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 
 
 @Service
@@ -46,12 +46,12 @@ public class AuthServiceImpl implements AuthService {
         String p = loginDto.getPassword();
 
         if (userRepository.findByEmail(loginDto.getUsername()).isEmpty()) {
-            log.info(" login отрабатывает false");
+            log.error(" login отрабатывает false");
             return false;
         }
         UserDetails userDetails = myUserDetailsService.loadUserByUsername(loginDto.getUsername());
         String p2 = userDetails.getPassword();
-        log.info(" login отрабатывает второй блок");
+
 
         return passwordEncoder.matches(p, p2);
 
@@ -73,6 +73,7 @@ public class AuthServiceImpl implements AuthService {
             userRepository.save(newUser);
             return true;
         }
+
 
         return false;
     }

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import sky.pro.demo_shop.config.GetAuthenticationUser;
 import sky.pro.demo_shop.dto.*;
 import sky.pro.demo_shop.entity.Ad;
 import sky.pro.demo_shop.entity.Comment;
@@ -40,16 +41,18 @@ public class AdServiceImpl implements AdService {
     private final UserRepository userRepository;
     private final AdMapperDto adMapper;
     private final CommentMapperDto commentMapper;
+    private final GetAuthenticationUser getAuthenticationUser;
     private static final Logger log = Logger.getLogger(AdServiceImpl.class);
 
     public AdServiceImpl( @Value("${ads.path.to.image.folder}")String imageDir, AdRepository adRepository, CommentRepository commentRepository
-            , UserRepository userRepository, AdMapperDto adMapper, CommentMapperDto commentMapper) {
+            , UserRepository userRepository, AdMapperDto adMapper, CommentMapperDto commentMapper,GetAuthenticationUser getAuthenticationUser) {
         this.imageDir = imageDir;
         this.adRepository = adRepository;
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
         this.adMapper = adMapper;
         this.commentMapper = commentMapper;
+        this.getAuthenticationUser = getAuthenticationUser;
     }
 
     /**
@@ -107,20 +110,9 @@ public class AdServiceImpl implements AdService {
         return adMapper.adToAdDto(ad);
     }
 
-    /**
-     * <hr>
-     * <br>
-     * Вспомогательный метод для получения username (email) авторизованного {@link User} из {@link SecurityContextHolder#getContext()}. <br>
-     * <br>
-     */
-    private String getCurrentUsername() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
-    }
 
     /**
-     * <br>
-     * Вспомогательный метод для получения расширения файла из его названия. <br>
-     * <br>
+     * Вспомогательный метод для получения расширения файла из его названия.
      */
     private String getExtension(String filename) {
         return filename.substring(filename.lastIndexOf(".") + 1);
@@ -222,7 +214,7 @@ public class AdServiceImpl implements AdService {
         Ad ad = getThatAd(pk);
         if (ad != null && ad.getAuthor().equals(user)) {
             Path filePath = null;
-            String fileName = "user_" + user.getId() + "_ad_" + ad.getPk() + "." + getExtension(image.getOriginalFilename());
+            String fileName = "userAd_" + user.getId() + "_ad_" + ad.getPk() + "." + getExtension(image.getOriginalFilename());
             try {
                 filePath = Path.of(imageDir, fileName);
                 Files.createDirectories(filePath.getParent());
@@ -350,7 +342,7 @@ public class AdServiceImpl implements AdService {
     private User getUser() {
         User user = null;
         try {
-            user = userRepository.findByEmail(getCurrentUsername()).get();
+            user = userRepository.findByEmail(getAuthenticationUser.getAuthorizedUser()).get();
         } catch (NoSuchElementException e) {
             log.error(e.getMessage());
         }
