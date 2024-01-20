@@ -1,43 +1,52 @@
 package sky.pro.demo_shop.entity;
 
-
-import sky.pro.demo_shop.dto.CommentDto;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import java.util.List;
+import javax.persistence.*;
 import java.util.Objects;
 
+import static javax.persistence.GenerationType.IDENTITY;
+
+
 @Entity
+@Table(name = "comment")
 public class Comment {
-    private Integer author;
-    private String authorImage;    //ссылка на аватар автора комментария
-    private String authorFirstName; //имя создателя комментария
-    private Long createdAt;       //дата и время создания комментария в миллисекундах с 00:00:00 01.01.1970
     @Id
+    @GeneratedValue(strategy = IDENTITY)
     private Integer pk;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private User author;
+    private String authorImage;
+    private String authorFirstName;
+    private long createdAt;
     private String text;
-    private int count;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Ad ad;
 
-    public Comment(Integer author, String authorImage, String authorFirstName
-            , Long createdAt, Integer pk, String text, int count) {
+    public Comment() {
+    }
+
+    public Comment(Integer pk, User author, String authorImage, String authorFirstName, long createdAt, String text, Ad ad) {
+        this.pk = pk;
         this.author = author;
         this.authorImage = authorImage;
         this.authorFirstName = authorFirstName;
         this.createdAt = createdAt;
-        this.pk = pk;
         this.text = text;
-        this.count = count;
+        this.ad = ad;
     }
 
-    public Integer getAuthor() {
+    public Integer getPk() {
+        return pk;
+    }
+
+    public void setPk(Integer pk) {
+        this.pk = pk;
+    }
+
+    public User getAuthor() {
         return author;
     }
 
-    public void setAuthor(Integer author) {
+    public void setAuthor(User author) {
         this.author = author;
     }
 
@@ -57,20 +66,12 @@ public class Comment {
         this.authorFirstName = authorFirstName;
     }
 
-    public Long getCreatedAt() {
+    public long getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Long createdAt) {
+    public void setCreatedAt(long createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public Integer getPk() {
-        return pk;
-    }
-
-    public void setPk(Integer pk) {
-        this.pk = pk;
     }
 
     public String getText() {
@@ -81,25 +82,12 @@ public class Comment {
         this.text = text;
     }
 
-    public int getCount() {
-        return count;
+    public Ad getAd() {
+        return ad;
     }
 
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    @Override
-    public String toString() {
-        return "Comment{" +
-                "author=" + author +
-                ", authorImage='" + authorImage + '\'' +
-                ", authorFirstName='" + authorFirstName + '\'' +
-                ", createdAt=" + createdAt +
-                ", pk=" + pk +
-                ", text='" + text + '\'' +
-                ", count=" + count +
-                '}';
+    public void setAd(Ad ad) {
+        this.ad = ad;
     }
 
     @Override
@@ -107,11 +95,24 @@ public class Comment {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Comment comment = (Comment) o;
-        return count == comment.count && Objects.equals(author, comment.author) && Objects.equals(authorImage, comment.authorImage) && Objects.equals(authorFirstName, comment.authorFirstName) && Objects.equals(createdAt, comment.createdAt) && Objects.equals(pk, comment.pk) && Objects.equals(text, comment.text);
+        return createdAt == comment.createdAt && Objects.equals(pk, comment.pk) && Objects.equals(author, comment.author) && Objects.equals(authorImage, comment.authorImage) && Objects.equals(authorFirstName, comment.authorFirstName) && Objects.equals(text, comment.text) && Objects.equals(ad, comment.ad);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(author, authorImage, authorFirstName, createdAt, pk, text, count);
+        return Objects.hash(pk, author, authorImage, authorFirstName, createdAt, text, ad);
+    }
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "pk=" + pk +
+                ", author=" + author +
+                ", authorImage='" + authorImage + '\'' +
+                ", authorFirstName='" + authorFirstName + '\'' +
+                ", createdAt=" + createdAt +
+                ", text='" + text + '\'' +
+                ", ad=" + ad +
+                '}';
     }
 }

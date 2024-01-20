@@ -1,22 +1,23 @@
 package sky.pro.demo_shop.config;
 
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import sky.pro.demo_shop.entity.Users;
+import sky.pro.demo_shop.entity.User;
 
 import java.util.Collection;
 import java.util.Collections;
 
 public class UserDetailsImpl implements UserDetails {
 
-    private final Users user;
+    private final User user;
 
-    public UserDetailsImpl(Users user) {
+    public UserDetailsImpl(User user) {
         this.user = user;
     }
 
-    public Users getUser() {
+    public User getUser() {
         return user;
     }
 
